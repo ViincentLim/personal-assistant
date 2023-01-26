@@ -1,38 +1,44 @@
 package com.viincentlim.common
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.layout.LazyLayout
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
-import androidx.compose.material.Button
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun App() {
-    var platformNameText by remember { mutableStateOf("Hello, World!") }
-    val platformName = getPlatformName()
-    var texts by remember { mutableStateOf(ArrayList<String>()) }
-    var text by remember { mutableStateOf("Hello, World!") }
+    var todos: ArrayList<String> = ArrayList()
+    var textFieldValue by remember { mutableStateOf("Hello World") }
 
     val addButtonInteractionSource = remember { MutableInteractionSource() }
     val addButtonCoroutine = rememberCoroutineScope()
     val onAddButtonClick = {
-        if (text.trim() != "") {
-            texts.add(text.trim())
-            text = ""
+        if (textFieldValue.trim() != "") {
+            todos.add(textFieldValue.trim())
         }
+        textFieldValue = ""
     }
     fun simulateAddButtonPress() {
         addButtonCoroutine.launch {
@@ -44,19 +50,24 @@ fun App() {
         }
     }
 
-    MaterialTheme(colors = MaterialTheme.colors.copy(primary = Color.Black)) {
-        Column {
-            Button(onClick = {
-                platformNameText = "Hello, ${platformName}"
-            }) {
-                Text(platformNameText)
+
+    MaterialTheme {
+        Box(
+            modifier = Modifier.fillMaxHeight().fillMaxWidth(),
+        ) {
+            Column {
+                Text(text = "Todos", fontWeight = FontWeight.Black, fontSize = 30.sp, modifier = Modifier.padding(10.dp))
+                LazyColumn(modifier = Modifier.fillMaxWidth().padding(bottom = 56.dp)) {
+                    items(todos) {
+                        Text(it, modifier = Modifier.padding(horizontal = 10.dp))
+                    }
+                }
             }
-            texts.map { p -> Text(p) }
             TextField(
-                value = text,
+                value = textFieldValue,
                 singleLine = true,
                 onValueChange = {
-                    text = it
+                    textFieldValue = it
                 },
                 keyboardActions = KeyboardActions(
                     onDone = {
@@ -69,29 +80,28 @@ fun App() {
                         simulateAddButtonPress()
                     }
                     return@onKeyEvent false
-                },
+                }.background(Color.White).fillMaxWidth().align(Alignment.BottomCenter),
                 leadingIcon = {
                     IconButton(
                         onClick = {
-                            text = ""
+                            textFieldValue = ""
                         },
                     ) {
                         Icon(
-                            Icons.Default.Clear,
-                            contentDescription = "",
-                            tint = Color.Black
+                            Icons.Rounded.Clear,
+                            contentDescription = "clear task",
                         )
                     }
                 },
                 trailingIcon = {
                     IconButton(
-                        onClick = onAddButtonClick,
-                        interactionSource = addButtonInteractionSource
+                        onClick = {
+                            onAddButtonClick()
+                        },
                     ) {
                         Icon(
-                            Icons.Default.Add,
-                            contentDescription = "",
-                            tint = Color.Black
+                            Icons.Rounded.Add,
+                            contentDescription = "add a task",
                         )
                     }
                 },
