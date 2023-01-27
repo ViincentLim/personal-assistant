@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -29,8 +30,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun App() {
-    var todos: ArrayList<String> = ArrayList()
-    var textFieldValue by remember { mutableStateOf("Hello World") }
+    var todos = rememberSaveable { ArrayList<String>() } // todo: replace with data persistence in storage and database
+    var textFieldValue by rememberSaveable { mutableStateOf("Hello World") }
 
     val addButtonInteractionSource = remember { MutableInteractionSource() }
     val addButtonCoroutine = rememberCoroutineScope()
@@ -49,7 +50,6 @@ fun App() {
             addButtonInteractionSource.emit(PressInteraction.Release(press))
         }
     }
-
 
     MaterialTheme {
         Box(
