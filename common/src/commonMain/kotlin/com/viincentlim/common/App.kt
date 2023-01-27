@@ -55,11 +55,15 @@ fun App() {
         Box(
             modifier = Modifier.fillMaxHeight().fillMaxWidth(),
         ) {
-            Column {
-                Text(text = "Todos", fontWeight = FontWeight.Black, fontSize = 30.sp, modifier = Modifier.padding(10.dp))
-                LazyColumn(modifier = Modifier.fillMaxWidth().padding(bottom = 56.dp)) {
-                    items(todos) {
-                        Text(it, modifier = Modifier.padding(horizontal = 10.dp))
+            LazyColumn(modifier = Modifier.fillMaxWidth().padding(bottom = 56.dp)) {
+                item {
+                    Card(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
+                        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)) {
+                            Text(text = "Todos", fontWeight = FontWeight.Black, fontSize = 30.sp, modifier = Modifier.padding(bottom = 12.dp))
+                            todos.forEach {
+                                Text(it)
+                            }
+                        }
                     }
                 }
             }
@@ -98,6 +102,7 @@ fun App() {
                         onClick = {
                             onAddButtonClick()
                         },
+                        interactionSource = addButtonInteractionSource
                     ) {
                         Icon(
                             Icons.Rounded.Add,
