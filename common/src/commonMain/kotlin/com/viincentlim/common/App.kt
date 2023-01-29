@@ -5,8 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.layout.LazyLayout
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -21,7 +20,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
@@ -30,7 +28,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun App() {
-    var todos = rememberSaveable { ArrayList<String>() } // todo: replace with data persistence in storage and database
+    val headerFontSize = 30.sp
+
+    val todos = rememberSaveable { ArrayList<String>() } // todo: replace with data persistence in storage and database
     var textFieldValue by rememberSaveable { mutableStateOf("Hello World") }
 
     val addButtonInteractionSource = remember { MutableInteractionSource() }
@@ -50,22 +50,33 @@ fun App() {
             addButtonInteractionSource.emit(PressInteraction.Release(press))
         }
     }
+    fun LazyListScope.addCard(
+        headerText: String,
+        viewModels: ArrayList<String>
+    ) {
+        item {
+            Card(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)) {
+                    Text(
+                        text = headerText,
+                        fontWeight = FontWeight.Black,
+                        fontSize = headerFontSize,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                    viewModels.forEach {
+                        Text(it)
+                    }
+                }
+            }
+        }
+    }
 
     MaterialTheme {
         Box(
             modifier = Modifier.fillMaxHeight().fillMaxWidth(),
         ) {
             LazyColumn(modifier = Modifier.fillMaxWidth().padding(bottom = 56.dp)) {
-                item {
-                    Card(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
-                        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)) {
-                            Text(text = "Todos", fontWeight = FontWeight.Black, fontSize = 30.sp, modifier = Modifier.padding(bottom = 12.dp))
-                            todos.forEach {
-                                Text(it)
-                            }
-                        }
-                    }
-                }
+                addCard("Todos", todos)
             }
             TextField(
                 value = textFieldValue,
@@ -114,4 +125,5 @@ fun App() {
         }
     }
 }
+
 
