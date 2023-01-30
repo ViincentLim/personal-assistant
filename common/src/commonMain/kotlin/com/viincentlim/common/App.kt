@@ -22,22 +22,26 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.viincentlim.common.items.Item
+import com.viincentlim.common.items.Todo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import kotlin.collections.ArrayList
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun App() {
     val headerFontSize = 30.sp
 
-    val todos = rememberSaveable { ArrayList<String>() } // todo: replace with data persistence in storage and database
+    val todos = rememberSaveable { ArrayList<Todo>() } // todo: replace with data persistence in storage and database
     var textFieldValue by rememberSaveable { mutableStateOf("Hello World") }
 
     val addButtonInteractionSource = remember { MutableInteractionSource() }
     val addButtonCoroutine = rememberCoroutineScope()
     val onAddButtonClick = {
         if (textFieldValue.trim() != "") {
-            todos.add(textFieldValue.trim())
+            todos.add(Todo(name = textFieldValue.trim(), deadline = LocalDate.now(), id = ""))
         }
         textFieldValue = ""
     }
@@ -52,7 +56,7 @@ fun App() {
     }
     fun LazyListScope.addCard(
         headerText: String,
-        viewModels: ArrayList<String>
+        viewModels: ArrayList<Item>
     ) {
         item {
             Card(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
@@ -64,7 +68,7 @@ fun App() {
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
                     viewModels.forEach {
-                        Text(it)
+                        it.createView()
                     }
                 }
             }
@@ -76,7 +80,7 @@ fun App() {
             modifier = Modifier.fillMaxHeight().fillMaxWidth(),
         ) {
             LazyColumn(modifier = Modifier.fillMaxWidth().padding(bottom = 56.dp)) {
-                addCard("Todos", todos)
+                addCard("Todos", todos as ArrayList<Item>)
             }
             TextField(
                 value = textFieldValue,
